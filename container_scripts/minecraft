@@ -35,6 +35,7 @@ while getopts "hc:m:" OPTION ; do
       ;;
     m)
       MEM=$OPTARG
+      ;;
     \?)
       usage
       ;;

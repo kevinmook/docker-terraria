@@ -1,0 +1,39 @@
+#!/bin/bash -e
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+usage() {
+  cat <<END
+Usage: $progname OPTIONS
+  -h            Display this help text
+  -p            Specify listen port
+
+${*:-}
+END
+  exit 1
+}
+
+while getopts "hp:i" OPTION ; do
+  case $OPTION in
+    h)
+      usage
+      ;;
+    p)
+      port=$OPTARG
+      ;;
+    i)
+      interactive=true
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+port=${port:-25565}
+
+if [ $interactive ]; then
+  docker run -t -i -v $DIR/../data:/data -v $DIR/../backup:/backup -p $port:25565/tcp -p $port:25565/udp minecraft /bin/bash
+else
+  docker run -d -v $DIR/../data:/data -v $DIR/../backup:/backup -p $port:25565/tcp -p $port:25565/udp minecraft
+fi

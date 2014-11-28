@@ -1,0 +1,81 @@
+#!/bin/bash -e
+
+usage() {
+  cat <<END
+Usage: $progname OPTIONS <command>
+
+        command (start, stop, backup, backup-norun)
+
+  -m    Memory footprint
+
+  -h    Display this help text
+
+${*:-}
+END
+  exit 1
+}
+
+backup-norun() {
+  date_stamp=`date +"%Y-%m-%d-%H-%M"`
+  backup_file="/backup/${date_stamp}.tgz"
+  
+  # back up the world
+  (tar -czf $backup_file /data --exclude plugins/dynmap/web/tiles &> /dev/null) || true
+}
+
+MEM=3072M
+
+while getopts "hc:m:" OPTION ; do
+  case $OPTION in
+    h)
+      usage
+      ;;
+    c)
+      COMMAND=$OPTARG
+      ;;
+    m)
+      MEM=$OPTARG
+    \?)
+      usage
+      ;;
+  esac
+done
+
+shift $(($OPTIND -1))
+if [[ -z "$COMMAND" ]] ; then
+  COMMAND=$1      # the command can be a regular argument instead of a -c, if we want
+fi
+
+case $COMMAND in
+  start)
+    cd /data
+    screen -dmS minecraft /usr/bin/java -server -Xms${MEM} -Xmx${MEM} -jar minecraft_server.jar nogui
+    ;;
+  stop)
+    screen -S minecraft -p 0 -X stuff "`printf "stop\r"`"
+    ;;
+  backup)
+    # save all
+    screen -S minecraft -p 0 -X stuff "`printf "save-all\r"`"
+    
+    # turn off saves
+    screen -S minecraft -p 0 -X stuff "`printf "save-off\r"`"
+    
+    # let the save finish
+    sleep 10
+    
+    # zip up the current state of things
+    backup-norun
+    
+    # turn on saves
+    screen -S minecraft -p 0 -X stuff "`printf "save-on\r"`"
+    ;;
+  backup-norun)
+    # zip up the current state of things
+    backup-norun
+    ;;
+  *)
+    usage
+    ;;
+esac
+

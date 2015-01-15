@@ -10,6 +10,10 @@ RUN add-apt-repository -y ppa:webupd8team/java && apt-get update && (echo debcon
 VOLUME ["/data"]
 VOLUME ["/backup"]
 
+ADD configs/ssh/* /tmp/
+RUN cat /tmp/authorized_keys >>/root/.ssh/authorized_keys &&\
+        rm -f /tmp/authorized_keys
+ 
 ADD /container_scripts/minecraft /minecraft/
 ADD /container_scripts/init.d/* /etc/my_init.d/
 

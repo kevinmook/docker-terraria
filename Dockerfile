@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM phusion/baseimage:0.9.15
 MAINTAINER Kevin Mook <kevin@kevinmook.com>
 
 RUN apt-get update && apt-get install -y wget screen software-properties-common
@@ -10,10 +10,10 @@ RUN add-apt-repository -y ppa:webupd8team/java && apt-get update && (echo debcon
 VOLUME ["/data"]
 VOLUME ["/backup"]
 
-COPY /container_scripts/minecraft /minecraft/
+ADD /container_scripts/minecraft /minecraft/
+ADD /container_scripts/init.d/* /etc/my_init.d/
 
 # Forward apporpriate ports
 EXPOSE 25565/tcp 25565/udp
 
-# Run minecraft
-CMD ["/minecraft/minecraft", "start"]
+CMD ["/sbin/my_init"]

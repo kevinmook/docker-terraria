@@ -1,0 +1,32 @@
+#!/bin/bash -e
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+usage() {
+  cat <<END
+Usage: $progname OPTIONS
+  -h            Display this help text
+  -a            Specify minecraft app name (default is 'default')
+
+${*:-}
+END
+  exit 1
+}
+
+while getopts "ha:" OPTION ; do
+  case $OPTION in
+    h)
+      usage
+      ;;
+    a)
+      app_name=$OPTARG
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+app_name=${app_name:-default}
+
+docker run -i -t --name minecraft_data_$app_name -v /data busybox /bin/sh

@@ -15,5 +15,5 @@ COPY /container_scripts/minecraft /minecraft/
 # Forward apporpriate ports
 EXPOSE 25565/tcp 25565/udp
 
-# Run murmur
+# Run minecraft
 CMD ["/minecraft/minecraft", "start"]

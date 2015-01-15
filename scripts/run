@@ -6,14 +6,16 @@ usage() {
   cat <<END
 Usage: $progname OPTIONS
   -h            Display this help text
-  -p            Specify listen port
+  -i            Interactive mode - show a bash console
+  -p            Specify listen port (default is 25565)
+  -a            Specify minecraft app name (default is 'default')
 
 ${*:-}
 END
   exit 1
 }
 
-while getopts "hp:i" OPTION ; do
+while getopts "hp:ia:" OPTION ; do
   case $OPTION in
     h)
       usage
@@ -24,6 +26,9 @@ while getopts "hp:i" OPTION ; do
     i)
       interactive=true
       ;;
+    a)
+      app_name=$OPTARG
+      ;;
     *)
       usage
       ;;
@@ -31,9 +36,13 @@ while getopts "hp:i" OPTION ; do
 done
 
 port=${port:-25565}
+app_name=${app_name:-default}
+
+backup_folder=$DIR/../backup/$app_name
+mkdir -p $backup_folder
 
 if [ $interactive ]; then
-  docker run -t -i -v $DIR/../data:/data -v $DIR/../backup:/backup -p $port:25565/tcp -p $port:25565/udp minecraft /bin/bash
+  docker run -t -i --memory 3072m --volumes-from minecraft_data_$app_name -v /data -v $backup_folder:/backup -p $port:25565/tcp -p $port:25565/udp minecraft /bin/bash
 else
-  docker run -d -v $DIR/../data:/data -v $DIR/../backup:/backup -p $port:25565/tcp -p $port:25565/udp minecraft
+  docker run -d    --memory 3072m --volumes-from minecraft_data_$app_name -v /data -v $backup_folder:/backup -p $port:25565/tcp -p $port:25565/udp minecraft
 fi

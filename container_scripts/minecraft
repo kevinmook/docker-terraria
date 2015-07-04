@@ -50,7 +50,7 @@ fi
 case $COMMAND in
   start)
     cd /data
-    screen -dmS minecraft /usr/bin/java -server -Xms${MEM} -Xmx${MEM} -jar minecraft_server.jar nogui
+    screen -dmS minecraft /usr/bin/java -server -Xms${MEM} -Xmx${MEM} -jar /data/server/Tekkit.jar nogui
     ;;
   stop)
     screen -S minecraft -p 0 -X stuff "`printf "stop\r"`"

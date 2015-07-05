@@ -49,7 +49,7 @@ fi
 
 case $COMMAND in
   start)
-    cd /data
+    cd /data/server
     screen -dmS minecraft /usr/bin/java -server -Xms${MEM} -Xmx${MEM} -jar /data/server/Tekkit.jar nogui
     ;;
   stop)

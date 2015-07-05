@@ -17,6 +17,14 @@ RUN cat /tmp/authorized_keys >>/root/.ssh/authorized_keys &&\
 ADD /container_scripts/minecraft /minecraft/
 ADD /container_scripts/init.d/* /etc/my_init.d/
 
+# allow sshing into the container
+RUN rm -f /etc/service/sshd/down
+
+# Regenerate SSH host keys. Passenger-docker does not contain any, so you
+# have to do that yourself. You may also comment out this instruction; the
+# init system will auto-generate one during boot.
+RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+
 # Forward apporpriate ports
 EXPOSE 25565/tcp 25565/udp
 

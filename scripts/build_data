@@ -6,7 +6,7 @@ usage() {
   cat <<END
 Usage: $progname OPTIONS
   -h            Display this help text
-  -a            Specify minecraft app name (default is 'default')
+  -a            Specify terraria app name (default is 'default')
 
 ${*:-}
 END
@@ -29,4 +29,4 @@ done
 
 app_name=${app_name:-default}
 
-docker run -i -t --name minecraft_data_$app_name -v /data phusion/baseimage:0.9.16 /bin/sh
+docker run -i -t --name terraria_data_$app_name -v /data phusion/baseimage:0.9.16 /bin/sh
